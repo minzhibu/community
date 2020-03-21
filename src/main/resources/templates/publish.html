@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>发布 - 问题</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <script src="js/bootstrap.min.js" type="application/javascript"></script>
+    <script src="js/jquery-3.4.1.min.js" type="application/javascript"></script>
+
+    <script src="../static/js/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only" href="/">社区</span>
+            </button>
+            <a class="navbar-brand" href="#">社区</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="搜索问题">
+                </div>
+                <button type="submit" class="btn btn-default">搜索</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li th:if="${session.user} eq null"><a href="https://github.com/login/oauth/authorize?client_id=4c749de267870ab6295c&
+redirect_uri=http://localhost:8080/callback&scope=user&state=1">登录</a></li>
+                <li th:if="${session.user} ne null"class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false" th:text="${session.user.getLogin()}"><span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">消息中心</a></li>
+                        <li><a href="#">个人资料</a></li>
+                        <li><a href="#">退出登录</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+    <div class="container-fluid">
+        <div class="row edit">
+          <div class="col-lg-9">
+              <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>发起</h2>
+              <hr>
+              <form id = "publish" action="/publish" method="post">
+                  <div class="form-group">
+                      <label for="title">问题标题(必填)</label>
+                      <input type="text" class="form-control" id="title" name="title" placeholder="问题标题">
+                  </div>
+                  <div class="form-group">
+                      <label for="description">问题详情(必填)</label>
+                      <textarea name="description" id="description" class="from-control" cols="30" rows="10"></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label for="tag">添加标签:</label>
+                      <input type="text" class="form-control" id="tag" name="tag" placeholder="输入标签，以,隔开" >
+                  </div>
+                  <div  id="error" class="alert alert-danger" role="alert" style="display: none"><span >还有必填项未填</span></div>
+                  <!-- Indicates a successful or positive action -->
+                  <input id="sub"type="button" class="btn btn-success" value="提交"></input>
+              </form>
+
+          </div>
+          <div class="col-lg-3">
+              <h3>问题发起指南</h3>
+              <h4>1.问题标题:<br>请用精简的语言描述您发布的问题，不能超过25个字</h4>
+              <h4>2.问题详细:<br>详细补充您的问题，并确保问题描述清晰直观</h4>
+              <h4>3.问题标签:<br>选择一个或者多个合适的标签，用逗号隔开，每个标签不超过10个字</h4>
+          </div>
+
+        </div>
+    </div>
+    <!-- 注意， 只需要引用 JS，无需引用任何 CSS ！！！-->
+    <script type="text/javascript">
+        var E = window.wangEditor
+        // 或者 var editor = new E( document.getElementById('editor') )
+        var pub = document.getElementById("publish");
+        var but = document.getElementById("sub");
+        but.onclick = function() {
+            var title = document.getElementById("title");
+            var description = document.getElementById("description");
+            if(title.value && description.value){
+                pub.submit();
+            }else{
+                document.getElementById("error").style.display="";
+            }
+        }
+    </script>
+</body>
+</html>

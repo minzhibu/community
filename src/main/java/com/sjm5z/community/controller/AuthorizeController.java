@@ -1,31 +1,31 @@
 package com.sjm5z.community.controller;
 
-import com.sjm5z.community.dto.AccessTokenDto;
-import com.sjm5z.community.dto.GitHubUser;
-import com.sjm5z.community.provider.GitHubProvider;
+import com.sjm5z.community.server.AuthorizationLoginServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @Controller
 public class AuthorizeController {
 
     @Autowired
-    private GitHubProvider gitHubProvider;
+    private AuthorizationLoginServer authorizationLogin;
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
-                           @RequestParam(name = "state") String state) {
-        AccessTokenDto accessTokenDTO = new AccessTokenDto();
-        accessTokenDTO.setRedirect_uri("http://localhost:8080/callback");
-        accessTokenDTO.setClient_id("4c749de267870ab6295c");
-        accessTokenDTO.setClient_secret("ba1786c36d52910c26a758c34b2f687a12109515");
-        accessTokenDTO.setCode(code);
-        accessTokenDTO.setState(state);
-        String accessToken = gitHubProvider.getAccessToken(accessTokenDTO);
-        GitHubUser user = gitHubProvider.getUser(accessToken);
-        System.out.println(user.getLogin());
-        return "index";
+                           @RequestParam(name = "state") String state,
+                           HttpServletRequest request, HttpServletResponse response) {
+        //登录授权操作
+        Cookie cookie = authorizationLogin.authorizationLogin(code, state, request.getSession());
+        System.out.println(cookie);
+        if(cookie != null){
+            response.addCookie(cookie);
+        }
+        return "redirect:/";
     }
 }
