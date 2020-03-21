@@ -26,9 +26,21 @@ public interface UserMapper {
             @Result(column = "account_id",property = "accountId"),
             @Result(column = "name",property = "name"),
             @Result(column = "gmt_create",property = "gmtCreate"),
-            @Result(column = "gmt-modified",property = "gmtModified"),
+            @Result(column = "gmt_modified",property = "gmtModified"),
+            @Result(column = "avatar_url",property = "avatarUrl"),
     })
     User selectUserOfToken(String token);
+
+    @Select("select * from user where account_id = #{accountID}")
+    @Results({
+            @Result(id = true,column = "id",property = "id"),
+            @Result(column = "account_id",property = "accountId"),
+            @Result(column = "name",property = "name"),
+            @Result(column = "gmt_create",property = "gmtCreate"),
+            @Result(column = "gmt_modified",property = "gmtModified"),
+            @Result(column = "avatar_url",property = "avatarUrl"),
+    })
+    User selectUserOfAccountID(String accountID);
 
 //    @Update("update user set token = #{token} where id = #{userID}")
 //    void updateToken(Long userID,String token);

@@ -1,7 +1,7 @@
 package com.sjm5z.community.controller;
 
 import com.sjm5z.community.model.Question;
-import com.sjm5z.community.server.QuestionServer;
+import com.sjm5z.community.service.QuestionServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

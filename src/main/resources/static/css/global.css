@@ -1,6 +1,24 @@
 body{
     background-color: #f5f5f5;
 }
+/*主页显示图片的样式*/
+.media-object{
+    width: 39px;
+    height: 39px;
+}
+/*设置首页字体颜色*/
+.text-desc{
+    font-size: 12px;
+    font-weight: normal;
+    color: #999;
+}
+/*首页上面的横线*/
+#media_above{
+    color: #f2dede;
+}
+#media_below{
+    color: #f5f5f5;
+}
 .edit{
     margin-right: 60px;
     margin-left: 60px;
@@ -19,9 +37,4 @@ body{
     width: 85px;
     margin-right: 20px;
     margin-bottom: 20px;
-}
-/*主页显示图片的样式*/
-.media-object{
-    width: 39px;
-    height: 39px;
 }

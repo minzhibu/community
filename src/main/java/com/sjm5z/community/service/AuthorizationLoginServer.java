@@ -1,4 +1,4 @@
-package com.sjm5z.community.server;
+package com.sjm5z.community.service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;

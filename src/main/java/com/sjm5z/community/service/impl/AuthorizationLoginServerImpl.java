@@ -1,20 +1,23 @@
-package com.sjm5z.community.server.impl;
+package com.sjm5z.community.service.impl;
 
-import com.sjm5z.community.dto.AccessTokenDto;
+import com.sjm5z.community.dto.AccessTokenDTO;
 import com.sjm5z.community.dto.GitHubUser;
 import com.sjm5z.community.mapper.UserMapper;
 import com.sjm5z.community.model.User;
 import com.sjm5z.community.provider.GitHubProvider;
-import com.sjm5z.community.server.AuthorizationLoginServer;
+import com.sjm5z.community.service.AuthorizationLoginServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
-@Component
+/**
+ * 登录授权的类
+ */
+@Service
 public class AuthorizationLoginServerImpl implements AuthorizationLoginServer {
     @Autowired
     private GitHubProvider gitHubProvider;
@@ -29,7 +32,7 @@ public class AuthorizationLoginServerImpl implements AuthorizationLoginServer {
 
     @Override
     public Cookie authorizationLogin(String code, String state, HttpSession session) {
-        AccessTokenDto accessTokenDTO = new AccessTokenDto();
+        AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setRedirect_uri(clientURI);
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
@@ -49,7 +52,7 @@ public class AuthorizationLoginServerImpl implements AuthorizationLoginServer {
                 user.setGmtCreate(System.currentTimeMillis());
                 user.setGmtModified(user.getGmtCreate());
                 user.setName(gitHubUser.getLogin());
-                user.setAvatarUrl(gitHubUser.getAvatar_url());
+                user.setAvatarUrl(gitHubUser.getAvatarUrl());
                 System.out.println(user);
                 userMapper.insert(user);
                 cookie = new Cookie("token",token);

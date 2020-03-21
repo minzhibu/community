@@ -1,6 +1,6 @@
 package com.sjm5z.community.controller;
 
-import com.sjm5z.community.server.AuthorizationLoginServer;
+import com.sjm5z.community.service.AuthorizationLoginServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
