@@ -1,6 +1,6 @@
 package com.sjm5z.community.controller;
 
-import com.sjm5z.community.service.AuthorizationLoginServer;
+import com.sjm5z.community.service.AuthorizationLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthorizeController {
 
     @Autowired
-    private AuthorizationLoginServer authorizationLogin;
+    private AuthorizationLoginService authorizationLogin;
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
@@ -22,7 +22,6 @@ public class AuthorizeController {
                            HttpServletRequest request, HttpServletResponse response) {
         //登录授权操作
         Cookie cookie = authorizationLogin.authorizationLogin(code, state, request.getSession());
-        System.out.println(cookie);
         if(cookie != null){
             response.addCookie(cookie);
         }

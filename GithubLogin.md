@@ -31,3 +31,9 @@ state:上面获取的
 3.获取到Token并处理完后调用最后的api
 GET https://api.github.com/user
 把token拼接在后面，返回来的就是我们需要的user信息
+
+
+
+##Spring 拦截器
+    基本使用方法:
+        

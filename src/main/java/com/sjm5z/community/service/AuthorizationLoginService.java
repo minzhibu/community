@@ -6,7 +6,7 @@ import javax.servlet.http.HttpSession;
 /**
  * 授权登录
  */
-public interface AuthorizationLoginServer {
+public interface AuthorizationLoginService {
     /**
      * 授权登录
      * @return

@@ -3,31 +3,34 @@
 <head>
     <title>社区</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/global.css">
     <script src="js/jquery-3.4.1.min.js" type="application/javascript"></script>
     <script src="js/bootstrap.min.js" type="application/javascript"></script>
 </head>
 <body>
 <!--导航条-->
-    <div th:insert="navigation :: nav"></div>
-    <div class="row edit">
-        <div class="col-lg-9">
-            <h2><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>发起</h2>
-            <hr id="media_above">
+<div th:insert="navigation :: nav"></div>
+<div class="row edit">
+    <div class="col-lg-9">
+        <h2><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>发起</h2>
+        <hr id="media_above">
+        <div th:if="${pagination != null}">
             <div class="media" th:each="question : ${pagination.questions}">
                 <div class="media-left">
-                    <a href="#">
+                    <a th:href="@{'/question/'+${question.id}}">
                         <img class="media-object img-rounded" th:src="${question.user.getAvatarUrl()}">
                     </a>
                 </div>
                 <div class="media-body">
-                    <h4 class="media-heading" th:text="${question.title}"></h4>
-                    <span th:text="${question.description}"></span><span class="text-desc"><br><span
-                        th:text="${question.commentCount}"></span> 个回复  • <span th:text="${question.viewCount}"></span> 次浏览  • <span
-                        th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd mm:ss')}"></span>
+                    <a class="questionTitle" th:href="@{'/question/'+${question.id}}" th:text="${question.title}"></a>
+                    <span class="text-desc"><br>
+                        <span th:text="${question.commentCount}"></span> 个回复  •
+                        <span th:text="${question.viewCount}"></span> 次浏览  •
+                        <span th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd mm:ss')}"></span>
                     </span>
+                    <!--                    <span th:text="${question.description}"></span>-->
                 </div>
                 <hr id="media_below" th:if="${question} ne ${pagination.questions[(pagination.questions.size()) -1]}">
             </div>
@@ -37,7 +40,6 @@
                         <a href="/?page=1" aria-label="Previous">
                             <span aria-hidden="true">&laquo;&laquo;</span>
                         </a>
-
                     </li>
                     <li th:if="${pagination.isShowPrevious()}">
                         <a th:href="@{'/?page=' + ${pagination.getPage() - 1}}" aria-label="Previous">
@@ -48,15 +50,6 @@
                         th:classappend="${page == pagination.getPage()} ? 'active' : '' ">
                         <a th:href="@{'/?page=' + ${page}}" th:text="${page}"></a>
                     </li>
-                    <!--                <li th:if="${page} ne ${pagination.getPage()}">-->
-                    <!--                    <a th:href="@{'/?page=' + ${page}}" th:text="${page}"></a>-->
-                    <!--                </li>-->
-
-                    <!--                <li><a href="#">1</a></li>-->
-                    <!--                <li><a href="#">2</a></li>-->
-                    <!--                <li><a href="#">3</a></li>-->
-                    <!--                <li><a href="#">4</a></li>-->
-                    <!--                <li><a href="#">5</a></li>-->
                     <li th:if="${pagination.isShowNext()}">
                         <!--                    th:href="@{'字符串'+${model中的nam值}}"。-->
                         <a th:href="@{'/?page=' + ${pagination.getPage() + 1}}" aria-label="Next">
@@ -71,12 +64,16 @@
                 </ul>
             </nav>
         </div>
-        <div class="col-lg-3">
-            <h3>热门话题</h3>
-
+        <div th:if="${pagination == null}">
+            <h4>还没有任何问题，快来发布问题吧!</h4>
         </div>
+    </div>
+    <div class="col-lg-3">
+        <h3>热门话题</h3>
 
     </div>
+
+</div>
 </div>
 </body>
 </html>

@@ -5,7 +5,7 @@ import com.sjm5z.community.dto.GitHubUser;
 import com.sjm5z.community.mapper.UserMapper;
 import com.sjm5z.community.model.User;
 import com.sjm5z.community.provider.GitHubProvider;
-import com.sjm5z.community.service.AuthorizationLoginServer;
+import com.sjm5z.community.service.AuthorizationLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.UUID;
  * 登录授权的类
  */
 @Service
-public class AuthorizationLoginServerImpl implements AuthorizationLoginServer {
+public class AuthorizationLoginServiceImpl implements AuthorizationLoginService {
     @Autowired
     private GitHubProvider gitHubProvider;
     @Value("${github.client.id}")
@@ -41,11 +41,12 @@ public class AuthorizationLoginServerImpl implements AuthorizationLoginServer {
         String accessToken = gitHubProvider.getAccessToken(accessTokenDTO);
         GitHubUser gitHubUser = gitHubProvider.getUser(accessToken);
         Cookie cookie = null;
+        User user;
         if (gitHubUser != null) {
-            Long accountIDExist = userMapper.selectAccountIDExist(gitHubUser.getId());
+            user = userMapper.selectUserExist(gitHubUser.getId());
             //如果当前该用户是第一授权则在数据库创建他的信息，如果不是则跳过这步
-            if(accountIDExist == null) {
-                User user = new User();
+            if(user == null) {
+                user = new User();
                 String token = UUID.randomUUID().toString();
                 user.setToken(token);
                 user.setAccountId(String.valueOf(gitHubUser.getId()));
@@ -57,13 +58,16 @@ public class AuthorizationLoginServerImpl implements AuthorizationLoginServer {
                 userMapper.insert(user);
                 cookie = new Cookie("token",token);
             }else{
-                String token = userMapper.selectToken(accountIDExist);
-                cookie = new Cookie("token",token);
+                String token = user.getToken();
+                cookie = new Cookie("token", token);
+                //3天
+                cookie.setMaxAge(60*60*60*24*3);
             }
-            session.setAttribute("user", gitHubUser);
+            session.setAttribute("user", user);
         }
         return cookie;
     }
+    //利用token来判定浏览器是否已经登录过
     @Override
     public Cookie getTokenToUser(Cookie[] cookies,HttpSession session) {
         if(cookies == null) {
@@ -76,10 +80,10 @@ public class AuthorizationLoginServerImpl implements AuthorizationLoginServer {
                     Cookie cookie1 = new Cookie("token",cookie.getValue());
                     //3天不登录cookie到期
                     cookie1.setMaxAge(60*60*60*24*3);
-                    GitHubUser gitHubUser = new GitHubUser();
-                    gitHubUser.setLogin(user.getName());
-                    gitHubUser.setId(Long.valueOf(user.getAccountId()));
-                    session.setAttribute("user",gitHubUser);
+//                    GitHubUser gitHubUser = new GitHubUser();
+//                    gitHubUser.setLogin(user.getName());
+//                    gitHubUser.setId(Long.valueOf(user.getAccountId()));
+                    session.setAttribute("user",user);
                     return cookie1;
                 }
             }

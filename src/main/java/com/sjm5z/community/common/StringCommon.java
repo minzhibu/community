@@ -16,7 +16,7 @@ public class StringCommon {
         int num = str.charAt(0) - 48;
         for (int i = 1; i < str.length(); i++) {
             char c = str.charAt(i);
-            if(c < 49 || c > 57){
+            if(c < 48 || c > 57){
                 break;
             }
             num *= 10;

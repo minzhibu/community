@@ -16,7 +16,12 @@ public class PaginationDTO {
     private Integer totalPage;
     private List<Integer> pages = new ArrayList<>();
 
-    //根据总页数计算该对象的属性
+    /**
+     *
+      * @param totalCount 总个数
+     * @param page 当前页
+     * @param size  一页显示多少
+     */
     public void setPagination(Integer totalCount, Integer page, Integer size) {
         totalPage = totalCount % size == 0 ? totalCount / size : totalCount / size + 1;
         if(page < 1){

@@ -9,7 +9,7 @@ public class Question {;
     private String description;
     private Long gmtCreate;
     private Long gmtModified;
-    private Long creator;
+    private Integer userID;
     private Integer commentCount;
     private Integer viewCount;
     private Integer likeCount;
