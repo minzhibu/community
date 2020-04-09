@@ -18,14 +18,15 @@
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-                <form class="navbar-form navbar-left">
+                <form action="/" class="navbar-form navbar-left">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="搜索问题">
+                        <input type="text" name="search" class="form-control" th:value="${search != null ? search : ''}" placeholder="搜索问题">
                     </div>
                     <button type="submit" class="btn btn-default">搜索</button>
                 </form>
                 <ul class="nav navbar-nav navbar-right">
-                    <li th:if="${session.user} ne null"><a href="http://localhost:8080/publish">提问</a></li>
+                    <li th:if="${session.user} ne null"><a href="/publish">提问</a></li>
+                    <li th:if="${session.user} ne null"><a href="/profile/replies">通知<span class="badge" th:text="${session.unreadCount}"></span></a></li>
                     <li th:if="${session.user} eq null"><a href="https://github.com/login/oauth/authorize?client_id=4c749de267870ab6295c&
 redirect_uri=http://localhost:8080/callback&scope=user&state=1">登录</a></li>
                     <li th:if="${session.user} ne null" class="dropdown">
@@ -36,8 +37,7 @@ redirect_uri=http://localhost:8080/callback&scope=user&state=1">登录</a></li>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="/profile/questions">我的提问</a></li>
-                            <li><a href="#">个人资料</a></li>
-                            <li><a href="#">退出登录</a></li>
+                            <li><a href="/logout">退出登录</a></li>
                         </ul>
                     </li>
                 </ul>

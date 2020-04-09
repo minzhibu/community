@@ -3,66 +3,107 @@
 <head>
     <title>发布 - 问题</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="css/global.css">
-    <script src="js/jquery-3.4.1.min.js" type="application/javascript"></script>
-    <script src="js/bootstrap.min.js" type="application/javascript"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/editormd.css">
+    <script src="/js/jquery-3.4.1.min.js" type="application/javascript"></script>
+    <script src="/js/bootstrap.min.js" type="application/javascript"></script>
+    <script src="/js/publish.js" type="application/javascript"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
 
 </head>
 <body>
-    <!--导航条-->
-    <div th:insert="navigation :: nav"></div>
+<!--导航条-->
+<div th:insert="navigation :: nav"></div>
 
-    <!--正文-->
-    <div class="container-fluid">
-        <div class="row edit">
-          <div class="col-lg-9">
-              <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>发起</h2>
-              <hr>
-              <form id = "publish" action="/publish" method="post">
-                  <div class="form-group">
-                      <label for="title">问题标题(必填)</label>
-                      <input type="text" class="form-control" id="title" name="title" placeholder="问题标题">
-                  </div>
-                  <div class="form-group">
-                      <label for="description">问题详情(必填)</label>
-                      <textarea name="description" id="description" class="from-control" cols="30" rows="10"></textarea>
-                  </div>
-                  <div class="form-group">
-                      <label for="tag">添加标签:</label>
-                      <input type="text" class="form-control" id="tag" name="tag" placeholder="输入标签，以,隔开" >
-                  </div>
-                  <div  id="error" class="alert alert-danger" role="alert" style="display: none"><span >还有必填项未填</span></div>
-                  <!-- Indicates a successful or positive action -->
-                  <input id="sub"type="button" class="btn btn-success" value="提交"></input>
-              </form>
+<!--正文-->
+<div class="container-fluid">
+    <div class="row edit">
+        <div class="col-lg-9">
+            <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>发起</h2>
+            <hr>
+            <form id="publish" action="/publish" method="post">
+                <input name="id" style="display: none" th:value="${question != null ? question.id : null}">
+                <div class="form-group">
+                    <label for="title">问题标题(必填)</label>
+                    <input autocomplete="off" th:value="${question != null? question.title :'' }" type="text"
+                           class="form-control"
+                           id="title" name="title" placeholder="问题标题">
+                </div>
+                <label for="description">问题详情(必填)</label>
+                <div class="form-group" id="question-editor">
+                    <textarea style="display: none" th:text="${question != null? question.description :'' }" name="description"
+                              id="description" class="from-control"
+                              cols="30" rows="10"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="tag">添加标签:</label>
+                    <input th:value="${question != null? question.tag :'' }"
+                           autocomplete="off" type="text" class="form-control"
+                           id="tag" name="tag" onkeyup="textKeyup(event)" onfocus="showSelectTag()"
+                           placeholder="输入标签，以,隔开">
+                    <div>
+                        <div id="selectTag">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation"
+                                    th:class="${tags[0].categoryName == tag.categoryName ? 'active' : ''}"
+                                    th:each="tag: ${tags}">
+                                    <a th:href="'#'+${tag.categoryName}" th:aria-controls="${tag.categoryName}"
+                                       role="tab" data-toggle="tab" th:text="${tag.categoryName}"></a>
+                                </li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpane1" th:each="tag: ${tags}" class="tab-pane"
+                                     th:classappend="${tags[0].categoryName == tag.categoryName ? 'active' : ''}"
+                                     th:id="${tag.categoryName}">
+                                    <span th:each="tags,tagsStat: ${tag.getTag()}" onclick="console.log('asd')"
+                                          th:onclick="selectTag(([[${tags}]]))">
+                                        <span class="label label-info tagSpan" th:text="${tags}"></span>
+                                        <span th:if="${tagsStat.index % 8 == 0 && tagsStat.index != 0}"><br></span>
+                                    </span>
 
-          </div>
-          <div class="col-lg-3">
-              <h3>问题发起指南</h3>
-              <h4>1.问题标题:<br>请用精简的语言描述您发布的问题，不能超过25个字</h4>
-              <h4>2.问题详细:<br>详细补充您的问题，并确保问题描述清晰直观</h4>
-              <h4>3.问题标签:<br>选择一个或者多个合适的标签，用逗号隔开，每个标签不超过10个字</h4>
-          </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="error" class="alert alert-danger" role="alert" style="display: none"><span id="errorSpan">还有必填项未填</span>
+                </div>
+                <!-- Indicates a successful or positive action -->
+                <input th:if="${question == null}" id="sub" type="button" class="btn btn-success" value="提交"></input>
+                <input th:if="${question != null}" id="sub" type="button" class="btn btn-success" value="修改"></input>
+            </form>
 
         </div>
+        <div class="col-lg-3">
+            <h3>问题发起指南</h3>
+            <h4>1.问题标题:<br>请用精简的语言描述您发布的问题，不能超过25个字</h4>
+            <h4>2.问题详细:<br>详细补充您的问题，并确保问题描述清晰直观</h4>
+            <h4>3.问题标签:<br>选择一个或者多个合适的标签，用逗号隔开，每个标签不超过10个字</h4>
+        </div>
+
     </div>
-    <!-- 注意， 只需要引用 JS，无需引用任何 CSS ！！！-->
-    <script type="text/javascript">
-        var E = window.wangEditor
-        // 或者 var editor = new E( document.getElementById('editor') )
-        var pub = document.getElementById("publish");
-        var but = document.getElementById("sub");
-        but.onclick = function() {
-            var title = document.getElementById("title");
-            var description = document.getElementById("description");
-            if(title.value && description.value){
-                pub.submit();
-            }else{
-                document.getElementById("error").style.display="";
-            }
+</div>
+<!-- 注意， 只需要引用 JS，无需引用任何 CSS ！！！-->
+<script type="text/javascript">
+    var E = window.wangEditor
+    // 或者 var editor = new E( document.getElementById('editor') )
+    var pub = document.getElementById("publish");
+    var but = document.getElementById("sub");
+    but.onclick = function () {
+        var title = document.getElementById("title");
+        var description = document.getElementById("description");
+        var tag = document.getElementById("tag");
+        if (title.value && description.value && tag.value) {
+            pub.submit();
+        } else {
+            $("#errorSpan").text("还有必填项未填！")
+            document.getElementById("error").style.display = "";
         }
-    </script>
+    }
+</script>
 </body>
 </html>

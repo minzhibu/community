@@ -18,4 +18,7 @@ public interface AuthorizationLoginService {
      * @param cookies
      */
     Cookie getTokenToUser(Cookie[] cookies,HttpSession session);
+
+    //退出登录 ,并且跟新token
+    Cookie logout(HttpSession session);
 }

@@ -1,7 +1,6 @@
 package com.sjm5z.community.controller;
 
 import com.sjm5z.community.common.StringCommon;
-import com.sjm5z.community.service.AuthorizationLoginService;
 import com.sjm5z.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,15 +20,12 @@ public class indexController {
     @GetMapping("/")
     public String index(HttpServletRequest request, HttpServletResponse response, Model model,
                         @RequestParam(name = "page", defaultValue = "1") String page,
-                        @RequestParam(name = "size", defaultValue = "7") String size) {
-
-//        //判断用户之前是否登录过
-//        Cookie cookie = authorizationLoginServer.getTokenToUser(request.getCookies(), request.getSession());
-//        if (cookie != null) {
-//            response.addCookie(cookie);
-//        }
-        model.addAttribute("pagination", questionServer.findAll(StringCommon.StringToInteger(page),
+                        @RequestParam(name = "size", defaultValue = "7") String size,
+                        @RequestParam(name = "search",required = false) String search
+                        ) {
+        model.addAttribute("pagination", questionServer.findAll(search,StringCommon.StringToInteger(page),
                 StringCommon.StringToInteger(size)));
+        model.addAttribute("search",search);
         return "index";
     }
 }

@@ -19,7 +19,9 @@ public class UserMapperTest {
 
     @Test
     public void test(){
-        System.out.println((int)'1');
-        System.out.println((int)'9');
+//        User user = userMapper.selectUserOfToken("e8344660-ff10-4678-92d3-526a7fd06c2d");
+//        System.out.println(user);
+//        userMapper.selectUserExist(1L);
+
     }
 }

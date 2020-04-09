@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class AuthorizeController {
@@ -25,6 +26,14 @@ public class AuthorizeController {
         if(cookie != null){
             response.addCookie(cookie);
         }
+        return "redirect:/";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request,HttpServletResponse response){
+        HttpSession session = request.getSession();
+        Cookie logout = authorizationLogin.logout(session);
+        response.addCookie(logout);
         return "redirect:/";
     }
 }

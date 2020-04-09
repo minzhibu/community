@@ -33,7 +33,66 @@ GET https://api.github.com/user
 把token拼接在后面，返回来的就是我们需要的user信息
 
 
+##mybatis Generator的使用:
+   1.在pom.xml文件的plugins中配置mybatis Generator的插件
+   ```xml
+    <plugin>
+       <groupId>org.mybatis.generator</groupId>
+       <artifactId>mybatis-generator-maven-plugin</artifactId>
+       <version>1.4.0</version>
+       <dependencies>
+           <dependency>
+               <groupId>mysql</groupId>
+               <!--在使用mysql時需要配置对应的mysql的驱动-->
+               <artifactId>mysql-connector-java</artifactId> 
+               <version>8.0.15</version>
+           </dependency>
+       </dependencies>
+   </plugin>
+   ```
+   2.mybatis Generator的默认配置文件的名称为generatorConfig.xml，在resource下创建该文件，文件内容如下
+   ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE generatorConfiguration
+            PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+            "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+    <generatorConfiguration>
+        <context id="DB2Tables" targetRuntime="MyBatis3">
+            <!--配置分页对象-->
+            <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"></plugin>
+            <!--配置数据库的连接-->
+            <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                            connectionURL="jdbc:mysql://localhost:3306/community"
+                            userId="root"
+                            password="321261949">
+                <property name="nullCatalogMeansCurrent" value="true" />
+            </jdbcConnection>
+            <javaTypeResolver >
+                <property name="forceBigDecimals" value="false" />
+            </javaTypeResolver>
+            <!--配置实体类生成的位置-->
+            <javaModelGenerator targetPackage="com.sjm5z.community.model" targetProject="src/main/java">
+                <property name="enableSubPackages" value="true" />
+                <property name="trimStrings" value="true" />
+            </javaModelGenerator>
+            <!--配置对应的xml文件生成的位置-->
+            <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+                <property name="enableSubPackages" value="true" />
+            </sqlMapGenerator>
+            <!--配置接口所在的位置-->
+            <javaClientGenerator type="XMLMAPPER" targetPackage="com.sjm5z.community.mapper"  targetProject="src/main/java">
+                <property name="enableSubPackages" value="true" />
+            </javaClientGenerator>
+            <!--需要自动生成的表-->
+            <table tableName="user" domainObjectName="User" >
+            </table>
+            <table tableName="question" domainObjectName="Question" >
+            </table>
+        </context>
+    </generatorConfiguration>
+   ```
+   3. 在控制台执行该命令 mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate
 
-##Spring 拦截器
-    基本使用方法:
+
+
         

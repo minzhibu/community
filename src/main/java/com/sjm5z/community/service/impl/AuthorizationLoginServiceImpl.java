@@ -4,6 +4,7 @@ import com.sjm5z.community.dto.AccessTokenDTO;
 import com.sjm5z.community.dto.GitHubUser;
 import com.sjm5z.community.mapper.UserMapper;
 import com.sjm5z.community.model.User;
+import com.sjm5z.community.model.UserExample;
 import com.sjm5z.community.provider.GitHubProvider;
 import com.sjm5z.community.service.AuthorizationLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -43,9 +45,11 @@ public class AuthorizationLoginServiceImpl implements AuthorizationLoginService 
         Cookie cookie = null;
         User user;
         if (gitHubUser != null) {
-            user = userMapper.selectUserExist(gitHubUser.getId());
+            UserExample userExample = new UserExample();
+            userExample.createCriteria().andAccountIdEqualTo(String.valueOf(gitHubUser.getId()));
+            List<User> users = userMapper.selectByExample(userExample);
             //如果当前该用户是第一授权则在数据库创建他的信息，如果不是则跳过这步
-            if(user == null) {
+            if (users.size() == 0) {
                 user = new User();
                 String token = UUID.randomUUID().toString();
                 user.setToken(token);
@@ -54,36 +58,37 @@ public class AuthorizationLoginServiceImpl implements AuthorizationLoginService 
                 user.setGmtModified(user.getGmtCreate());
                 user.setName(gitHubUser.getLogin());
                 user.setAvatarUrl(gitHubUser.getAvatarUrl());
-                System.out.println(user);
                 userMapper.insert(user);
-                cookie = new Cookie("token",token);
-            }else{
-                String token = user.getToken();
+                cookie = new Cookie("token", token);
+                session.setAttribute("user", user);
+            } else {
+                String token = users.get(0).getToken();
                 cookie = new Cookie("token", token);
                 //3天
-                cookie.setMaxAge(60*60*60*24*3);
+                cookie.setMaxAge(60 * 60 * 60 * 24 * 3);
+                session.setAttribute("user",users.get(0));
             }
-            session.setAttribute("user", user);
         }
         return cookie;
     }
+
     //利用token来判定浏览器是否已经登录过
     @Override
-    public Cookie getTokenToUser(Cookie[] cookies,HttpSession session) {
-        if(cookies == null) {
+    public Cookie getTokenToUser(Cookie[] cookies, HttpSession session) {
+        if (cookies == null) {
             return null;
         }
-        for(Cookie cookie: cookies){
-            if("token".equals(cookie.getName())){
-                User user = userMapper.selectUserOfToken(cookie.getValue());
-                if(user != null) {
-                    Cookie cookie1 = new Cookie("token",cookie.getValue());
+        for (Cookie cookie : cookies) {
+            if ("token".equals(cookie.getName())) {
+                UserExample example = new UserExample();
+                example.createCriteria().
+                        andTokenEqualTo(cookie.getValue());
+                List<User> users = userMapper.selectByExample(example);
+                if (users.size() != 0) {
+                    Cookie cookie1 = new Cookie("token", cookie.getValue());
                     //3天不登录cookie到期
-                    cookie1.setMaxAge(60*60*60*24*3);
-//                    GitHubUser gitHubUser = new GitHubUser();
-//                    gitHubUser.setLogin(user.getName());
-//                    gitHubUser.setId(Long.valueOf(user.getAccountId()));
-                    session.setAttribute("user",user);
+                    cookie1.setMaxAge(60 * 60 * 60 * 24 * 3);
+                    session.setAttribute("user", users.get(0));
                     return cookie1;
                 }
             }
@@ -91,6 +96,17 @@ public class AuthorizationLoginServiceImpl implements AuthorizationLoginService 
         return null;
     }
 
-
-
+    @Override
+    public Cookie logout(HttpSession session) {
+        User userS = (User) session.getAttribute("user");
+        session.removeAttribute("user");
+        User user = new User();
+        user.setToken(UUID.randomUUID().toString());
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andIdEqualTo(userS.getId());
+        userMapper.updateByExampleSelective(user, userExample);
+        Cookie cookie = new Cookie("token", "");
+        cookie.setMaxAge(0);
+        return cookie;
+    }
 }
